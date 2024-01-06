@@ -4,11 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import java.util.Calendar;
 
 public class AddReminderActivity extends AppCompatActivity {
 
@@ -24,6 +29,23 @@ public class AddReminderActivity extends AppCompatActivity {
             TextView title = findViewById(R.id.action_bar_title);
             title.setText("Hatirlatici Ekle");
         }
+
+        EditText editTextDate = findViewById(R.id.editTextDate);
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
+                (view, year1, monthOfYear, dayOfMonth) -> editTextDate.setText(dayOfMonth + "/" + (monthOfYear + 1) + "/" + year1), year, month, day);
+        editTextDate.setOnClickListener(v -> datePickerDialog.show());
+
+
+        EditText editTextTime = findViewById(R.id.editTextTime);
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+                (view, hourOfDay, minute) -> editTextTime.setText(String.format("%02d:%02d", hourOfDay, minute)), 0, 0, true);
+        editTextTime.setOnClickListener(v -> timePickerDialog.show());
+
     }
 
     @Override

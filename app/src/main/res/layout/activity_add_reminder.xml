@@ -4,4 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AddReminderActivity"/>
+    tools:context=".AddReminderActivity">
+
+    <EditText
+        android:id="@+id/editTextDate"
+        android:layout_width="390dp"
+        android:layout_height="65dp"
+        android:drawableRight="@android:drawable/ic_menu_my_calendar"
+        android:focusable="false"
+        android:hint="Tarih seçiniz"
+        android:textColorHint="#808080"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editTextTime"
+        android:layout_width="390dp"
+        android:layout_height="65dp"
+        android:drawableRight="@android:drawable/ic_menu_delete"
+        android:focusable="false"
+        android:hint="Saat ekleyin"
+        android:textColorHint="#808080"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDate" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
