@@ -22,12 +22,48 @@
         android:id="@+id/editTextTime"
         android:layout_width="390dp"
         android:layout_height="65dp"
-        android:drawableRight="@android:drawable/ic_menu_delete"
+        android:drawableRight="@android:drawable/ic_notification_clear_all"
         android:focusable="false"
         android:hint="Saat ekleyin"
         android:textColorHint="#808080"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editTextDate" />
+
+    <EditText
+        android:id="@+id/editTextDescription"
+        android:layout_width="390dp"
+        android:layout_height="65dp"
+        android:drawableRight="@android:drawable/ic_menu_edit"
+        android:hint="Açıklama"
+        android:textColorHint="#808080"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTime" />
+
+    <EditText
+        android:id="@+id/editTextSoundFile"
+        android:layout_width="390dp"
+        android:layout_height="65dp"
+        android:drawableRight="@android:drawable/ic_menu_upload"
+        android:focusable="false"
+        android:hint="Ses dosyası seçin"
+        android:textColorHint="#808080"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
+
+    <Button
+        android:id="@+id/buttonCreate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="203dp"
+        android:text="Oluştur"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

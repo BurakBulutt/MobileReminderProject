@@ -1,18 +1,24 @@
 package com.example.odev;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.Calendar;
 
 public class AddReminderActivity extends AppCompatActivity {
@@ -46,6 +52,15 @@ public class AddReminderActivity extends AppCompatActivity {
                 (view, hourOfDay, minute) -> editTextTime.setText(String.format("%02d:%02d", hourOfDay, minute)), 0, 0, true);
         editTextTime.setOnClickListener(v -> timePickerDialog.show());
 
+        EditText editTextSoundFile = findViewById(R.id.editTextSoundFile);
+        editTextSoundFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SoundFileDialogFragment dialog = new SoundFileDialogFragment();
+                dialog.show(getSupportFragmentManager(), "SoundFileDialog");
+            }
+        });
+
     }
 
     @Override
@@ -53,6 +68,7 @@ public class AddReminderActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_add_reminder,menu);
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
