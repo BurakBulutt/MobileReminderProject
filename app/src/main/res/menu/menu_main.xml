@@ -4,4 +4,8 @@
         android:title="Hatırlatıcı Ekle"
         android:orderInCategory="100"
         app:showAsAction="never" />
+    <item android:id="@+id/action_list_reminder"
+        android:title="Hatırlatıcıları Göster"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

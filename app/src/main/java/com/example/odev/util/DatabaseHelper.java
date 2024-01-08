@@ -11,14 +11,25 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME = "homework.db";
-    private static final int DATABASE_VERSION = 1;
-    private static final String TABLE_NAME = "reminder";
-    private static final String COLUMN_ID = "id";
-    private static final String COLUMN_DESCRIPTION = "description";
-    private static final String COLUMN_DATE = "date";
-    private static final String COLUMN_HOUR = "hour";
-    private static final String COLUMN_PATH = "path";
+    public static final String DATABASE_NAME = "reminder.db";
+    public static final int DATABASE_VERSION = 1;
+    public static final String TABLE_NAME = "reminder";
+    public static final String COLUMN_ID = "id";
+    public static final String COLUMN_DESCRIPTION = "description";
+    public static final String COLUMN_DATE = "date";
+    public static final String COLUMN_HOUR = "hour";
+    public static final String COLUMN_SOUND_PATH = "sound_path";
+
+    private static final String SQL_CREATE_ENTRIES =
+            "CREATE TABLE " + TABLE_NAME + " (" +
+                    COLUMN_ID + " INTEGER PRIMARY KEY," +
+                    COLUMN_DESCRIPTION + " TEXT," +
+                    COLUMN_DATE + " TEXT," +
+                    COLUMN_HOUR + " TEXT," +
+                    COLUMN_SOUND_PATH + " TEXT)";
+
+    private static final String SQL_DELETE_ENTRIES =
+            "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -26,21 +37,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL(SQL_CREATE_ENTRIES);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-    }
-
-    public long addReminder(Reminder reminder) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-        String date = dateFormat.format(reminder.getDate());
-        values.put(COLUMN_DESCRIPTION, reminder.getDescription());
-        values.put(COLUMN_DATE, date);
-        values.put(COLUMN_HOUR, reminder.getHour());
-        values.put(COLUMN_PATH, reminder.getPath());
-        return db.insert(TABLE_NAME, null, values);
+        db.execSQL(SQL_DELETE_ENTRIES);
+        onCreate(db);
     }
 }

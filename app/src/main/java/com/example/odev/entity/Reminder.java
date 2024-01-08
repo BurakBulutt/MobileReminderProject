@@ -5,19 +5,18 @@ import java.util.Date;
 public class Reminder {
     private Integer id;
     private String description;
-    private Date date;
+    private String date;
     private String hour;
     private String path;
 
     public Reminder() {
     }
 
-    public Reminder(Integer id, String description, Date date, String hour, String path) {
-        this.id = id;
+    public Reminder(Integer id,String description, String date, String hour) {
+        this.id=id;
         this.description = description;
         this.date = date;
         this.hour = hour;
-        this.path = path;
     }
 
     public Integer getId() {
@@ -36,11 +35,11 @@ public class Reminder {
         this.description = description;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

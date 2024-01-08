@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, AddReminderActivity.class);
             startActivity(intent);
             return true;
+        } else if (id == R.id.action_list_reminder) {
+            Intent intent = new Intent(this, ListReminderActivity.class);
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
