@@ -25,6 +25,7 @@ public class UpdateReminderActivity extends AppCompatActivity {
     private EditText editTextTime;
     private EditText editTextDescription;
     private EditText editTextSoundFile;
+    private EditText editTextAfterReminderMin;
     private Button buttonUpdate;
     private Reminder reminder;
 
@@ -37,6 +38,7 @@ public class UpdateReminderActivity extends AppCompatActivity {
         editTextTime = findViewById(R.id.editTextTime);
         editTextDescription = findViewById(R.id.editTextDescription);
         editTextSoundFile = findViewById(R.id.editTextSoundFile);
+        editTextAfterReminderMin = findViewById(R.id.editTextAfterRemindMin);
         buttonUpdate = findViewById(R.id.buttonUpdate);
 
         reminder = getIntent().getParcelableExtra("reminder");
@@ -45,6 +47,7 @@ public class UpdateReminderActivity extends AppCompatActivity {
         editTextTime.setText(reminder.getHour());
         editTextDescription.setText(reminder.getDescription());
         editTextSoundFile.setText(reminder.getPath());
+        editTextAfterReminderMin.setText(reminder.getAfterRemindMinute().toString() + " dakika önce");
 
         EditText editTextDate = findViewById(R.id.editTextDate);
         Calendar calendar = Calendar.getInstance();
@@ -72,6 +75,15 @@ public class UpdateReminderActivity extends AppCompatActivity {
             }
         });
 
+        EditText editTextAfterRemindMinFile = findViewById(R.id.editTextAfterRemindMin);
+        editTextAfterRemindMinFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AfterRemindMinDialogFragment dialog = new AfterRemindMinDialogFragment();
+                dialog.show(getSupportFragmentManager(), "AfterRemindMinDialog");
+            }
+        });
+
         buttonUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,12 +91,14 @@ public class UpdateReminderActivity extends AppCompatActivity {
                 String time = editTextTime.getText().toString();
                 String description = editTextDescription.getText().toString();
                 String soundFile = editTextSoundFile.getText().toString();
+                Integer afterRemindMin = Integer.parseInt(editTextAfterRemindMinFile.getText().toString());
 
                 ContentValues values = new ContentValues();
                 values.put(DatabaseHelper.COLUMN_DATE, date);
                 values.put(DatabaseHelper.COLUMN_HOUR, time);
                 values.put(DatabaseHelper.COLUMN_DESCRIPTION, description);
                 values.put(DatabaseHelper.COLUMN_SOUND_PATH, soundFile);
+                values.put(DatabaseHelper.COLUMN_AFTER_REMIND_MINUTE,afterRemindMin);
 
                 String selection = DatabaseHelper.COLUMN_ID + " = ?";
                 String[] selectionArgs = { String.valueOf(reminder.getId()) };

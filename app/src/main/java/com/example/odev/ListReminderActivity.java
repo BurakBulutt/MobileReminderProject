@@ -38,7 +38,7 @@ public class ListReminderActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_reminder);
 
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar!=null){
+        if (actionBar != null) {
             actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
             actionBar.setCustomView(R.layout.action_bar_title);
             TextView title = findViewById(R.id.action_bar_title);
@@ -65,9 +65,9 @@ public class ListReminderActivity extends AppCompatActivity {
                 int position = viewHolder.getAdapterPosition();
                 Reminder reminder = reminders.get(position);
 
-                if(direction == ItemTouchHelper.RIGHT){
+                if (direction == ItemTouchHelper.RIGHT) {
                     Intent intent = new Intent(ListReminderActivity.this, UpdateReminderActivity.class);
-                    intent.putExtra("reminder",reminder);
+                    intent.putExtra("reminder", reminder);
                     startActivity(intent);
 
                 } else if (direction == ItemTouchHelper.LEFT) {
@@ -77,7 +77,7 @@ public class ListReminderActivity extends AppCompatActivity {
                             .setPositiveButton("Evet", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     String selection = DatabaseHelper.COLUMN_ID + " = ?";
-                                    String[] selectionArgs = { String.valueOf(reminder.getId()) };
+                                    String[] selectionArgs = {String.valueOf(reminder.getId())};
                                     int deletedRows = db.delete(DatabaseHelper.TABLE_NAME, selection, selectionArgs);
 
                                     if (deletedRows > 0) {
@@ -112,7 +112,8 @@ public class ListReminderActivity extends AppCompatActivity {
                 DatabaseHelper.COLUMN_DESCRIPTION,
                 DatabaseHelper.COLUMN_DATE,
                 DatabaseHelper.COLUMN_HOUR,
-                DatabaseHelper.COLUMN_SOUND_PATH
+                DatabaseHelper.COLUMN_SOUND_PATH,
+                DatabaseHelper.COLUMN_AFTER_REMIND_MINUTE
         };
 
         Cursor cursor = db.query(
@@ -126,13 +127,14 @@ public class ListReminderActivity extends AppCompatActivity {
         );
 
         reminders = new ArrayList<>();
-        while(cursor.moveToNext()) {
+        while (cursor.moveToNext()) {
             String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DESCRIPTION));
             String date = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATE));
             String hour = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_HOUR));
             Integer id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
             String soundPath = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SOUND_PATH));
-            reminders.add(new Reminder(id,description, date, hour,soundPath));
+            Integer afterRemindMin = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_AFTER_REMIND_MINUTE));
+            reminders.add(new Reminder(id, description, date, hour, soundPath,afterRemindMin));
         }
         cursor.close();
         return reminders;
@@ -140,7 +142,7 @@ public class ListReminderActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_list_reminder,menu);
+        getMenuInflater().inflate(R.menu.menu_list_reminder, menu);
         return true;
     }
 
@@ -155,8 +157,12 @@ public class ListReminderActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_home){
+        if (id == R.id.action_home) {
             Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_add_reminder) {
+            Intent intent = new Intent(this, AddReminderActivity.class);
             startActivity(intent);
             return true;
         }

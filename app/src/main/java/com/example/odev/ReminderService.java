@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 public class ReminderService extends Service {
     public ReminderService() {
@@ -44,22 +43,27 @@ public class ReminderService extends Service {
             if (reminderDate != null){
                 Calendar calendar = Calendar.getInstance();
                 Date currentTime = calendar.getTime();
-                calendar.add(Calendar.MINUTE,5);
+                calendar.add(Calendar.MINUTE,reminder.getAfterRemindMinute());
                 Date fiveMinuteLater = calendar.getTime();
 
                 if (reminderDate.before(fiveMinuteLater) && reminderDate.after(currentTime)){
-                    AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-                    Intent alarmIntent = new Intent(this, AlarmReceiver.class);
-                    alarmIntent.putExtra("description", reminder.getDescription());
-                    alarmIntent.putExtra("path", reminder.getPath());
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getId(), alarmIntent, PendingIntent.FLAG_IMMUTABLE);
-                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderDate.getTime(), pendingIntent);
+                    // Bildirim için bir Intent oluştur
+                    Intent notificationIntent = new Intent(this, NotificationReceiver.class);
+                    notificationIntent.putExtra("description", reminder.getDescription());
+                    sendBroadcast(notificationIntent);
                 }
+                AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                Intent alarmIntent = new Intent(this, AlarmReceiver.class);
+                alarmIntent.putExtra("description", reminder.getDescription());
+                alarmIntent.putExtra("id",reminder.getId());
+                alarmIntent.putExtra("path", reminder.getPath());
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, reminder.getId(), alarmIntent, PendingIntent.FLAG_MUTABLE);
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, reminderDate.getTime(), pendingIntent);
             }
 
         }
 
-        return START_NOT_STICKY;
+        return START_STICKY;
     }
 
     private List<Reminder> getReminders(){
@@ -71,7 +75,8 @@ public class ReminderService extends Service {
                 DatabaseHelper.COLUMN_DESCRIPTION,
                 DatabaseHelper.COLUMN_DATE,
                 DatabaseHelper.COLUMN_HOUR,
-                DatabaseHelper.COLUMN_SOUND_PATH
+                DatabaseHelper.COLUMN_SOUND_PATH,
+                DatabaseHelper.COLUMN_AFTER_REMIND_MINUTE
         };
 
         Cursor cursor = db.query(
@@ -91,7 +96,8 @@ public class ReminderService extends Service {
             String hour = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_HOUR));
             Integer id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
             String soundPath = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SOUND_PATH));
-            reminders.add(new Reminder(id,description, date, hour,soundPath));
+            Integer afterRemindMin = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_AFTER_REMIND_MINUTE));
+            reminders.add(new Reminder(id, description, date, hour, soundPath,afterRemindMin));
         }
         cursor.close();
         return reminders;

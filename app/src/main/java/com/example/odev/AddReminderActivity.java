@@ -70,6 +70,15 @@ public class AddReminderActivity extends AppCompatActivity {
             }
         });
 
+        EditText editTextAfterRemindMinFile = findViewById(R.id.editTextAfterRemindMin);
+        editTextAfterRemindMinFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AfterRemindMinDialogFragment dialog = new AfterRemindMinDialogFragment();
+                dialog.show(getSupportFragmentManager(), "AfterRemindMinDialog");
+            }
+        });
+
 
         Button createButton = findViewById(R.id.buttonCreate);
         createButton.setOnClickListener(new View.OnClickListener() {
@@ -79,12 +88,14 @@ public class AddReminderActivity extends AppCompatActivity {
                 EditText textDate = findViewById(R.id.editTextDate);
                 EditText textTime = findViewById(R.id.editTextTime);
                 EditText textSoundFile = findViewById(R.id.editTextSoundFile);
+                EditText textAfterRemindMin = findViewById(R.id.editTextAfterRemindMin);
 
                 Reminder reminder = new Reminder();
                 reminder.setDate(textDate.getText().toString());
                 reminder.setHour(textTime.getText().toString());
                 reminder.setDescription(textDescription.getText().toString());
                 reminder.setPath(textSoundFile.getText().toString());
+                reminder.setAfterRemindMinute(Integer.parseInt(textAfterRemindMin.getText().toString()));
 
                 DatabaseHelper reminderHelper = new DatabaseHelper(AddReminderActivity.this);
                 SQLiteDatabase dbReminder = reminderHelper.getWritableDatabase();
@@ -94,6 +105,7 @@ public class AddReminderActivity extends AppCompatActivity {
                 values.put(DatabaseHelper.COLUMN_HOUR,reminder.getHour());
                 values.put(DatabaseHelper.COLUMN_DESCRIPTION,reminder.getDescription());
                 values.put(DatabaseHelper.COLUMN_SOUND_PATH,reminder.getPath());
+                values.put(DatabaseHelper.COLUMN_AFTER_REMIND_MINUTE,reminder.getAfterRemindMinute());
 
                 long newRow = dbReminder.insert(DatabaseHelper.TABLE_NAME,null,values);
 

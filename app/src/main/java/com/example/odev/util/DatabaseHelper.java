@@ -12,13 +12,14 @@ import java.util.Locale;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "reminder.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String TABLE_NAME = "reminder";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_DESCRIPTION = "description";
     public static final String COLUMN_DATE = "date";
     public static final String COLUMN_HOUR = "hour";
     public static final String COLUMN_SOUND_PATH = "sound_path";
+    public static final String COLUMN_AFTER_REMIND_MINUTE = "after_remind_minute";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -42,7 +43,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(SQL_DELETE_ENTRIES);
-        onCreate(db);
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + COLUMN_AFTER_REMIND_MINUTE + " INTEGER");
+        }
     }
 }

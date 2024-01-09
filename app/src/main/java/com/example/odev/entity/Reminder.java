@@ -9,6 +9,7 @@ public class Reminder implements Parcelable {
     private String date;
     private String hour;
     private String path;
+    private Integer afterRemindMinute;
 
     protected Reminder(Parcel in) {
         id = in.readInt();
@@ -16,14 +17,16 @@ public class Reminder implements Parcelable {
         date = in.readString();
         hour = in.readString();
         path = in.readString();
+        afterRemindMinute = in.readInt();
     }
 
-    public Reminder(Integer id, String description, String date, String hour, String path) {
+    public Reminder(Integer id, String description, String date, String hour, String path,Integer afterRemindMinute) {
         this.id = id;
         this.description = description;
         this.date = date;
         this.hour = hour;
         this.path = path;
+        this.afterRemindMinute= afterRemindMinute;
     }
 
     public Reminder(){
@@ -96,4 +99,11 @@ public class Reminder implements Parcelable {
         this.path = path;
     }
 
+    public Integer getAfterRemindMinute() {
+        return afterRemindMinute;
+    }
+
+    public void setAfterRemindMinute(Integer afterRemindMinute) {
+        this.afterRemindMinute = afterRemindMinute;
+    }
 }
