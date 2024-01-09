@@ -1,6 +1,7 @@
 package com.example.odev;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -23,6 +24,7 @@ import com.example.odev.entity.Reminder;
 import com.example.odev.util.DatabaseHelper;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ListReminderActivity extends AppCompatActivity {
@@ -46,6 +48,62 @@ public class ListReminderActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        DatabaseHelper dbHelper = new DatabaseHelper(this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        adapter = new ReminderAdapter(getAllRemindersFromDataBase());
+        recyclerView.setAdapter(adapter);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                Reminder reminder = reminders.get(position);
+
+                if(direction == ItemTouchHelper.RIGHT){
+                    Intent intent = new Intent(ListReminderActivity.this, UpdateReminderActivity.class);
+                    intent.putExtra("reminder",reminder);
+                    startActivity(intent);
+
+                } else if (direction == ItemTouchHelper.LEFT) {
+                    new AlertDialog.Builder(ListReminderActivity.this)
+                            .setTitle("Hatırlatıcıyı Sil")
+                            .setMessage("Bu hatırlatıcıyı silmek istediğinize emin misiniz?")
+                            .setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    String selection = DatabaseHelper.COLUMN_ID + " = ?";
+                                    String[] selectionArgs = { String.valueOf(reminder.getId()) };
+                                    int deletedRows = db.delete(DatabaseHelper.TABLE_NAME, selection, selectionArgs);
+
+                                    if (deletedRows > 0) {
+                                        reminders.remove(position);
+                                        adapter.notifyItemRemoved(position);
+                                    } else {
+                                        adapter.notifyItemChanged(position);
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Hayır", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    adapter.notifyItemChanged(position);
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                }
+
+            }
+        });
+
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+    }
+
+    private List<Reminder> getAllRemindersFromDataBase() {
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
@@ -73,52 +131,11 @@ public class ListReminderActivity extends AppCompatActivity {
             String date = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_DATE));
             String hour = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_HOUR));
             Integer id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
-            reminders.add(new Reminder(id,description, date, hour));
+            String soundPath = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SOUND_PATH));
+            reminders.add(new Reminder(id,description, date, hour,soundPath));
         }
         cursor.close();
-
-        adapter = new ReminderAdapter(reminders);
-        recyclerView.setAdapter(adapter);
-
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
-
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
-                Reminder reminder = reminders.get(position);
-
-                new AlertDialog.Builder(ListReminderActivity.this)
-                        .setTitle("Hatırlatıcıyı Sil")
-                        .setMessage("Bu hatırlatıcıyı silmek istediğinize emin misiniz?")
-                        .setPositiveButton("Evet", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                String selection = DatabaseHelper.COLUMN_ID + " = ?";
-                                String[] selectionArgs = { String.valueOf(reminder.getId()) };
-                                int deletedRows = db.delete(DatabaseHelper.TABLE_NAME, selection, selectionArgs);
-
-                                if (deletedRows > 0) {
-                                    reminders.remove(position);
-                                    adapter.notifyItemRemoved(position);
-                                } else {
-                                    adapter.notifyItemChanged(position);
-                                }
-                            }
-                        })
-                        .setNegativeButton("Hayır", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                adapter.notifyItemChanged(position);
-                            }
-                        })
-                        .setIcon(android.R.drawable.ic_dialog_alert)
-                        .show();
-            }
-        });
-
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        return reminders;
     }
 
     @Override
@@ -127,6 +144,13 @@ public class ListReminderActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        reminders.clear();
+        reminders.addAll(getAllRemindersFromDataBase());
+        adapter.notifyDataSetChanged();
+    }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {

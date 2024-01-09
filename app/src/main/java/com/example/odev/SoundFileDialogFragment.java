@@ -17,6 +17,7 @@ import android.widget.ListView;
 import androidx.fragment.app.DialogFragment;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 public class SoundFileDialogFragment extends DialogFragment {
 
@@ -31,8 +32,12 @@ public class SoundFileDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_sound_file_dialog, null);
 
         listView = view.findViewById(R.id.listView);
-        // ses dosyalarınızın adlarını bir diziye ekleyin
-        String[] soundFiles = {"sound1", "sound2", "sound3"};
+
+        Field[] fields = R.raw.class.getFields();
+        String[] soundFiles = new String[fields.length];
+        for (int i = 0; i < fields.length; i++) {
+            soundFiles[i] = fields[i].getName();
+        }
         adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_single_choice, soundFiles);
         listView.setAdapter(adapter);
         listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -41,14 +46,18 @@ public class SoundFileDialogFragment extends DialogFragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String selectedSoundFile = adapter.getItem(position);
-                // ses dosyasını çal
-                AssetFileDescriptor afd = null;
+
+                if (mediaPlayer != null) {
+                    mediaPlayer.release();
+                    mediaPlayer = null;
+                }
+
+                int resId = getResources().getIdentifier(selectedSoundFile, "raw", getActivity().getPackageName());
+
                 try {
-                    afd = getActivity().getAssets().openFd(selectedSoundFile + ".mp3");
-                    mediaPlayer.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                    mediaPlayer.prepare();
+                    mediaPlayer = MediaPlayer.create(getActivity(), resId);
                     mediaPlayer.start();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -58,7 +67,6 @@ public class SoundFileDialogFragment extends DialogFragment {
                 .setPositiveButton("Tamam", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        // ses dosyasının adını EditText'e yaz
                         EditText editTextSoundFile = getActivity().findViewById(R.id.editTextSoundFile);
                         SparseBooleanArray checked = listView.getCheckedItemPositions();
                         if (checked != null) {
