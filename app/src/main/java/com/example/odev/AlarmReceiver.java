@@ -53,6 +53,11 @@ public class AlarmReceiver extends BroadcastReceiver {
 
         // ShakeDetector örneğini oluştur
         shakeDetector = new ShakeDetector();
+
+        // ShakeDetector'ı başlat
+        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_UI);
         shakeDetector.setOnShakeListener(new ShakeDetector.OnShakeListener() {
             @Override
             public void onShake(int count) {
@@ -62,11 +67,6 @@ public class AlarmReceiver extends BroadcastReceiver {
                 }
             }
         });
-
-        // ShakeDetector'ı başlat
-        SensorManager sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        sensorManager.registerListener(shakeDetector, accelerometer, SensorManager.SENSOR_DELAY_UI);
 
     }
 

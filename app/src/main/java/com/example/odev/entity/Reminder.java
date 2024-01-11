@@ -57,6 +57,7 @@ public class Reminder implements Parcelable {
         parcel.writeString(date);
         parcel.writeString(hour);
         parcel.writeString(path);
+        parcel.writeInt(afterRemindMinute);
     }
 
     public Integer getId() {

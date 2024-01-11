@@ -47,7 +47,7 @@ public class UpdateReminderActivity extends AppCompatActivity {
         editTextTime.setText(reminder.getHour());
         editTextDescription.setText(reminder.getDescription());
         editTextSoundFile.setText(reminder.getPath());
-        editTextAfterReminderMin.setText(reminder.getAfterRemindMinute().toString() + " dakika önce");
+        editTextAfterReminderMin.setText(reminder.getAfterRemindMinute() + " dakika önce");
 
         EditText editTextDate = findViewById(R.id.editTextDate);
         Calendar calendar = Calendar.getInstance();

@@ -10,6 +10,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.IBinder;
 
+import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.example.odev.entity.Reminder;
 import com.example.odev.util.DatabaseHelper;
 
@@ -52,6 +55,7 @@ public class ReminderService extends Service {
                     notificationIntent.putExtra("description", reminder.getDescription());
                     sendBroadcast(notificationIntent);
                 }
+
                 AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 Intent alarmIntent = new Intent(this, AlarmReceiver.class);
                 alarmIntent.putExtra("description", reminder.getDescription());
